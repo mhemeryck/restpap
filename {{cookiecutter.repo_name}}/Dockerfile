@@ -18,7 +18,8 @@ RUN addgroup -S -g ${GUID} ${USER} \
 # Required for building some python packages
 RUN apk --no-cache add \
   mariadb-dev python3-dev build-base \
-  jpeg-dev
+  jpeg-dev \
+  wget ca-certificates
 
 # Copy requirements and install
 COPY requirements/requirements.txt /tmp/requirements.txt
@@ -27,6 +28,11 @@ RUN pip install --no-deps -r /tmp/requirements.txt
 # Copy test requirements and install
 COPY requirements/requirements_test.txt /tmp/requirements_test.txt
 RUN pip install --no-deps -r /tmp/requirements_test.txt
+
+# Install wait-for script
+RUN wget https://raw.githubusercontent.com/Eficode/wait-for/a93091b798cfbeae856f3bf3a1151a56629a61bf/wait-for \
+  -P /usr/local/bin \
+  && chmod 744 /usr/local/bin/wait-for
 
 # Change ownership
 RUN chown ${USER}:${USER} -R .
